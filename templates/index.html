@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지현이의 중간지점 찾기!</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+    <!-- 구글폰트 -->
+    <link href="https://fonts.googleapis.com/css?family=Stylish&display=swap" rel="stylesheet">
+
+    <script>
+
+        $(document).ready(function(){
+            listing();
+        });
+
+        function listing() {
+            $.ajax({
+              type: "GET",
+              url: "/get",
+              data: {},
+              success: function (response) {
+                if (response['result'] == 'success') {
+                  var info = response['info'];
+                  for(i=0; i<info.length; i++){
+                    make_people_list(info[i]['name'], info[i]['address']);
+                  }
+                } else {
+                  alert('리스트를 받아오지 못했습니다');
+                }
+              }
+            })
+          }
+        
+          function make_people_list(name, address) {
+            let list_temp = `<tr>
+                        <td>${name}</td>
+                        <td>${address}</td>
+                    </tr>`;
+            $('#peopleList-box').append(list_temp);
+          }
+      
+
+        function save_address() {
+            let name = $('#inputName').val();
+            let address = $('#inputAddress').val();
+
+            if(name == '') {
+                alert('이름을 입력해주세요');
+                $('#inputName').focus();
+            }else if(address == '') {
+                alert('주소를 입력해주세요');
+                $('#inputAddress').focus();
+            }
+
+            $.ajax({
+              type: "POST",
+              url: "/post",
+              data: {name_receive : name, address_receive : address},
+              success: function (response) {
+                if (response['result'] == 'success') {
+                
+                } else {
+                  alert('정보를 받아오지 못했습니다');
+                }
+              }
+            })
+          }
+
+        // 사람 추가
+        function add_person(name, address) {
+            let temp_html = `
+                <div class="form-group">
+                    <label for="inputName">Name</label>
+                    <input type="text" class="form-control" id="inputName" placeholder="이름을 입력하세요">
+                </div>
+                <div class="form-group">
+                    <label for="inputAddress">Address</label>
+                    <input type="address" class="form-control" id="inputAddress" placeholder="주소를 입력하세요">
+                </div>
+            `;
+            $('#personFrom').append(temp_html);
+        }
+
+        function saveAddress() {
+            var addressArray = new Array();
+        }
+    </script>
+
+    <style type="text/css">
+        * {
+            font-family: 'Stylish', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wholeContent">
+        <h1>주소를 입력하세요</h1>
+        <form class="personFrom" id="personFrom">
+            <div class="form-group">
+                <label for="inputName">Name</label>
+                <input type="text" class="form-control" id="inputName" placeholder="이름을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="inputAddress">Address</label>
+                <input type="address" class="form-control" id="inputAddress" placeholder="주소를 입력하세요">
+            </div>
+            <button onclick="save_address()" class="btn btn-primary">저장하기</button>
+        </form>
+        <button onclick="add_person()" type="add" class="btn btn-primary">추가</button>
+        <a href="/map" class="btn btn-primary">중간지점 찾기</a>
+        <div class="peopleList" id="pepleList">
+            <table class="peopleTable">
+                <thead>
+                    <tr>
+                        <th class="name_info" scope="col">이름</th>
+                        <th class="address_info" scope="col">주소</th>
+                    </tr>
+                </thead>
+                <tbody id="peopleList-box">
+                    <tr>
+                        <td>이름</td>
+                        <td>주소</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>
